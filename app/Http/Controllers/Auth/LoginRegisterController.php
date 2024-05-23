@@ -11,32 +11,22 @@ use Illuminate\Support\Facades\Hash;
 class LoginRegisterController extends Controller
 {
     /**
-     * Instantiate a new LoginRegisterController instance.
+     * Create a new controller instance.
+     *
+     * @return void
      */
     public function __construct()
     {
-        $this->middleware('guest')->except([
-            'logout', 'dashboard'
-        ]);
+        $this->middleware('guest')->except(['logout', 'dashboard']);
     }
 
     /**
-     * Display a registration form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function register()
-    {
-        return view('auth.register');
-    }
-
-    /**
-     * Store a new user.
+     * Register a new user.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:250',
@@ -44,86 +34,79 @@ class LoginRegisterController extends Controller
             'password' => 'required|min:8|confirmed'
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
 
-        $credentials = $request->only('email', 'password');
-        Auth::attempt($credentials);
-        $request->session()->regenerate();
-        return redirect()->route('dashboard')
-        ->withSuccess('You have successfully registered & logged in!');
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
     }
 
     /**
-     * Display a login form.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function login()
-    {
-        return view('auth.login');
-    }
-
-    /**
-     * Authenticate the user.
+     * Authenticate a user and return access token.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function authenticate(Request $request)
+    public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
 
-        if(Auth::attempt($credentials))
-        {
-            $request->session()->regenerate();
-            return redirect()->route('dashboard')
-                ->withSuccess('You have successfully logged in!');
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'message' => 'Invalid login details'
+            ], 401);
         }
 
-        return back()->withErrors([
-            'email' => 'Your provided credentials do not match in our records.',
-        ])->onlyInput('email');
+        $user = $request->user();
+        $tokenResult = $user->createToken('Personal Access Token');
+        $token = $tokenResult->plainTextToken;
 
-    } 
-    
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
+    }
+
     /**
-     * Display a dashboard to authenticated users.
+     * Return dashboard message if user is authenticated.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function dashboard()
     {
-        if(Auth::check())
-        {
-            return view('auth.dashboard');
+        if (Auth::check()) {
+            return response()->json([
+                'message' => 'Welcome to the dashboard.'
+            ]);
         }
-        
-        return redirect()->route('login')
-            ->withErrors([
-            'email' => 'Please login to access the dashboard.',
-        ])->onlyInput('email');
-    } 
-    
+
+        return response()->json([
+            'message' => 'Please login to access the dashboard.'
+        ], 401);
+    }
+
     /**
-     * Log out the user from application.
+     * Logout the authenticated user.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('login')
-            ->withSuccess('You have logged out successfully!');;
-    }    
+        $request->user()->tokens()->delete();
 
+        return response()->json([
+            'message' => 'You have successfully logged out!'
+        ]);
+    }
 }
