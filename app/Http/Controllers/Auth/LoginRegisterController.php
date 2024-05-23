@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
+
 
 class LoginRegisterController extends Controller
 {
@@ -54,7 +56,7 @@ class LoginRegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    public function authenticate(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
@@ -68,8 +70,8 @@ class LoginRegisterController extends Controller
         }
 
         $user = $request->user();
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->plainTextToken;
+         $tokenResult = $user->createToken('Personal Access Token');
+             $token = $tokenResult->plainTextToken;
 
         return response()->json([
             'access_token' => $token,
