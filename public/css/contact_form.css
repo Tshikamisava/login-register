@@ -1,0 +1,79 @@
+h1 {
+  color: navy;
+  font-size: 50px;
+}
+
+.contact-form {
+  padding-left: 50px;
+}
+
+.alert-success {
+  color: green;
+  font-weight: bold;
+}
+
+.field-label {
+  padding-left: 5px;
+  font-size:medium;
+  
+}
+
+.text-field {
+  padding: 8px;
+  margin: 4px;
+  margin-bottom: 0px;
+  border: 1px solid #000;
+  border-radius: 10px;
+}
+
+.text-field::placeholder {
+  font-style: italic;
+  font-size: small;
+  font-family: monospace;
+
+}
+
+span {
+  margin-top: 0px;
+  padding-left: 10px;
+  font-size: smaller;
+  color: gray;
+  font-style: oblique;
+}
+
+span.error {
+  color: red;
+}
+
+#submit {
+  font-weight: bolder;
+  width: 100px;
+  padding: 10px;
+  border: 0px;
+  border-radius: 10px;
+  border-color: navy;
+  background-color: navy;
+  text-shadow: 0px 0px 0px white;
+  -webkit-text-fill-color: transparent;
+}
+
+#submit:hover {
+  background-color: #2E5A88;
+
+}
+
+.name-fields {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.name-fields>div {
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+  
+}
+
+.last-name-field {
+  margin-left: 20px;
+}
