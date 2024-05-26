@@ -20,5 +20,5 @@ Route::get('/dashboard', [LoginRegisterController::class, 'dashboard'])->name('d
 Route::post('/logout', [LoginRegisterController::class, 'logout'])->name('logout');
 
 // Contact Form Routes
-Route::get('/contact-form', [ContactFormController::class,'showContactForm']);
-Route::post('/contact-form', [ContactFormController::class, 'store']);
+Route::get('/contact-form', [ContactFormController::class,'showContactForm'])->name('contact-form');
+Route::post('/contact-form', [ContactFormController::class, 'submit'])->name('contact-form.submit');
