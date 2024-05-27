@@ -21,7 +21,7 @@ h1 {
 .text-field {
   padding: 8px;
   margin: 4px;
-  margin-bottom: 0px;
+  margin-bottom: 5px;
   border: 1px solid #000;
   border-radius: 10px;
 }
@@ -36,12 +36,16 @@ h1 {
 span {
   margin-top: 0px;
   padding-left: 10px;
-  font-size: smaller;
+  font-size: small;
   color: gray;
   font-style: oblique;
 }
 
 span.error {
+  color: rgb(241, 66, 66);
+}
+
+span.required {
   color: red;
 }
 
@@ -76,4 +80,9 @@ span.error {
 
 .last-name-field {
   margin-left: 20px;
+}
+
+.phone-number{
+  position: absolute;
+  right: -9999px;
 }
