@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('last_name',50)->nullable(false);
             $table->string('email',100)->nullable(false);
             $table->string('subject',100)->nullable(false);
-            $table->text('message')->nullable(false);
+            $table->string('message', 10000)->nullable(false);
             // For registered users - Link the contact request to the user's account
             // $table->foreignId('user_id')->constrained('users');
             $table->timestamps();

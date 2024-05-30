@@ -4,6 +4,7 @@
 <head>
   <link href="{{ asset('backend/css/app.css') }}" rel="stylesheet">
   <link href="{{ asset('backend/css/form.css') }}" rel="stylesheet">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <title>Contact Us</title>
 </head>
 
@@ -43,7 +44,7 @@
           <label class="block">
             <span>First name</span>
             <span class="relative mt-1.5 flex">
-              <input class="form-input peer w-9/12 rounded-full border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" type="text" id="first_name" name="first_name" placeholder="Enter your first name" value="{{ old('first_name') }}">
+              <input class="form-input peer w-9/12 rounded-full border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" type="text" id="first_name" name="first_name" placeholder="Enter your first name" value="{{ old('first_name') }}" maxlength="50">
               <span class="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent">
                 <i class="far fa-user text-base"></i>
               </span>
@@ -78,7 +79,7 @@
           <label class="block">
             <span>Email Address</span>
             <div class="relative mt-1.5 flex">
-              <input class="form-input peer w-9/12 rounded-full border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" type="text" id="email" name="email" size="40" maxlength="50" placeholder="Enter your email" value="{{ old('email') }}">
+              <input class="form-input peer w-9/12 rounded-full border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" type="text" id="email" name="email" maxlength="100" placeholder="Enter your email" value="{{ old('email') }}">
               <span class="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent">
                 <i class="fa-regular fa-envelope text-base"></i>
               </span>
@@ -116,7 +117,7 @@
         <label class="block">
           <span>Subject</span>
           <span class="relative mt-1.5 flex">
-            <input class="form-input peer w-6/12 rounded-full border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" type="text" id="subject" name="subject" size=53 maxlength="100" placeholder="Enter the subject of your message" value="{{ old('subject') }}">
+            <input class="form-input peer w-6/12 rounded-full border border-slate-300 bg-transparent px-3 py-2 pl-9 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" type="text" id="subject" name="subject" maxlength="100" placeholder="Enter the subject of your message" value="{{ old('subject') }}">
             <span class="pointer-events-none absolute flex h-full w-10 items-center justify-center text-slate-400 peer-focus:text-primary dark:text-navy-300 dark:peer-focus:text-accent">
               <i class="fa-regular fa-s text-base"></i>
             </span>
@@ -132,7 +133,7 @@
 
           <label class="block">
             <span>Message</span><br>
-            <textarea class="form-textarea mt-1.5 w-6/12 rounded-lg border border-slate-300 bg-transparent p-2.5 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" id="message" name="message" rows="10" cols="53" maxlength="10000" placeholder="Enter your message here. Be as detailed as possible.">{{ old('message') }}</textarea><br>
+            <textarea class="form-textarea mt-1.5 w-6/12 rounded-lg border border-slate-300 bg-transparent p-2.5 placeholder:text-slate-400/70 hover:border-slate-400 focus:border-primary dark:border-navy-450 dark:hover:border-navy-400 dark:focus:border-accent" id="message" name="message" rows="10"  maxlength="10000" placeholder="Enter your message here. Be as detailed as possible.">{{ old('message') }}</textarea><br>
             @if (session('success'))
             <div class="text-sm text-success">
               {{ session('success') }}
@@ -147,18 +148,19 @@
           <label class="block">
 
             {{--Recaptcha checkbox--}}
-            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
             <div class="g-recaptcha recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
-
-
+            @error('g-recaptcha-response')
+            <span class="text-sm text-error">{{ $message }}</span>
+            @enderror
           </label>
 
           {{--Buttons Div--}}
 
           <div class="flex justify-start">
-            <button class="btn space-x-2 bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90" type="submit">
-              <span>Submit</span>
-            </button>
+          <button class="btn min-w-[7rem] rounded-full bg-primary font-medium text-white hover:bg-primary-focus focus:bg-primary-focus active:bg-primary-focus/90 dark:bg-accent dark:hover:bg-accent-focus dark:focus:bg-accent-focus dark:active:bg-accent/90" type="submit">
+                   Submit
+                  </button>
+            
           </div>
 
         </div>
