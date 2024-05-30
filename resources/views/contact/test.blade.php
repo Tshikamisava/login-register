@@ -2,12 +2,12 @@
 <html>
 
 <head>
-  <link href="{{ asset('css/contact_form.css') }}" rel="stylesheet">
-  <title>Contact Form</title>
+  <link href="{{ asset('backend/css/contact_form.css') }}" rel="stylesheet">
+  <title>Contact Us</title>
 </head>
 
 <body>
-  <div class="contact-form">
+ <div class="contact-form">
     <h1>Contact us</h1>
     <form action="/contact-form" method="POST">
       {{-- Blade syntax: Is a directive that is used to generate a
@@ -23,7 +23,7 @@
 
       <div class="name-fields">
 
-      {{--first name field--}}
+        {{--first name field--}}
         <div>
           <label class="field-label" for="first_name">First name<span class="required">*</span></label>
           <input class="text-field" type="text" id="first_name" name="first_name" maxlength="50" placeholder="Enter your first name" value="{{ old('first_name') }}">
@@ -48,7 +48,7 @@
       {{--email field--}}
       <label class="field-label" for="email">Email<span class="required">*</span></label><br>
       <input class="text-field" type="email" id="email" name="email" size="40" maxlength="50" placeholder="Enter your email" value="{{ old('email') }}"><br>
-  
+
       @error('email')
       <span class="error">{{ $message }}</span>
       @enderror
@@ -59,11 +59,18 @@
 
       {{--phone number (honeypot) field--}}
       <div class="phone-number">
-      <label class="field-label " for="phone-number">Phone number<span class="required">*</span></label><br>
-      <input class="text-field" type="tel" id="phone-number" name="phone_number" size="40" maxlength="50" placeholder="Enter your phone number" value="{{ old('phone_number') }}">
-      <br><br>
+        <label class="field-label " for="phone-number">Phone number<span class="required">*</span></label><br>
+        <input class="text-field" type="tel" id="phone-number" name="phone_number" size="40" maxlength="50" placeholder="Enter your phone number" value="{{ old('phone_number') }}">
+        <br>
+        @error('phone_number')
+        <span class="error">{{ $message }}</span>
+        @enderror
+        @if(!$errors->has('phone_number'))
+        <span>0630799081</span>
+        @endif
+        <br><br>
       </div>
-      
+
       {{--subject field--}}
       <label class="field-label" for="subject">Subject<span class="required">*</span></label><br>
       <input class="text-field" type="text" id="subject" name="subject" size=53 maxlength="100" placeholder="Enter the subject of your message" value="{{ old('subject') }}"><br>
@@ -86,12 +93,18 @@
       @endif
       <br><br>
 
+      {{--Recaptcha checkbox--}}
+      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+      <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+
       {{--submit button--}}
       <input id="submit" type="submit" value="Submit" style="color: blue">
     </form>
 
 
-  </div>
+  </div> 
+
+
 </body>
 
 </html>

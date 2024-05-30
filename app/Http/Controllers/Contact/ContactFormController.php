@@ -15,7 +15,14 @@ class ContactFormController extends Controller
   // Show the contact form view
   public function showContactForm()
   {
-    return view('contact.contact_form');
+    return view('contact.index');
+
+  }
+
+  public function showTestPage()
+  {
+    return view('contact.test');
+    
   }
 
   // Store the contact form data
@@ -26,7 +33,7 @@ class ContactFormController extends Controller
       'last_name' => ['required', 'min:1', 'max:50'],
       'email' => ['required', 'email', 'min:5', 'max:100'],
       'subject' => ['required', 'min:3', 'max:100'],
-      'message' => ['required', 'min:20', 'max:65535'],
+      'message' => ['required', 'min:20', 'max:10000'],
       'phone_number' => ['max:0'], // honeypot field should be empty
     ];
 
@@ -42,7 +49,7 @@ class ContactFormController extends Controller
       'subject.min' => 'The subject must be atleast 3 characters.',
       'message.required' => 'The message is required.',
       'message.min' => 'The message must be atleast 20 characters.',
-      'phone_number.max' => 'Dear ' . request('first_name') . ', Thanks for contacting us! We will get back to you soon.' // honeypot pot sucessful message to confuse bots
+      'phone_number.max' => 'Dear ' . request('first_name') . ', Thanks for contacting us! We will get back to you soon.' // honeypot pot sucsessful message to confuse bots
     ];
 
     $data = request()->validate($validations, $errorMessages);

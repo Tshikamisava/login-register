@@ -22,3 +22,4 @@ Route::post('/logout', [LoginRegisterController::class, 'logout'])->name('logout
 // Contact Form Routes
 Route::get('/contact-form', [ContactFormController::class,'showContactForm'])->name('contact-form');
 Route::post('/contact-form', [ContactFormController::class, 'submit'])->name('contact-form.submit');
+Route::get('/test-page',[ContactFormController::class, 'showTestPage'])->name('test-page');
