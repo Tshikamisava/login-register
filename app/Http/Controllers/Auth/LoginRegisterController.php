@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Str; 
+use Laravel\Socialite\Facades\Socialite; 
+use Google_Client;
 
 class LoginRegisterController extends Controller
 {
@@ -66,7 +69,7 @@ class LoginRegisterController extends Controller
         Auth::login($user);
 
         // Redirect to the dashboard
-        return redirect()->route('auth.dashboard');
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -95,7 +98,7 @@ class LoginRegisterController extends Controller
         $request->session()->regenerate();
 
         // Redirect to the intended page or the dashboard
-        return redirect()->intended('auth.dashboard');
+        return redirect()->intended('dashboard');
     }
 
     /**
@@ -108,11 +111,9 @@ class LoginRegisterController extends Controller
         if (Auth::check()) {
             return view('auth.dashboard'); // Make sure 'dashboard.blade.php' exists in the 'resources/views' directory
         }
-    
+
         return redirect()->route('login');
     }
-    
-
 
     /**
      * Logout the user.
@@ -131,5 +132,55 @@ class LoginRegisterController extends Controller
 
         // Redirect to the login page
         return redirect()->route('login'); // or return response()->json(['message' => 'You have successfully logged out!']);
+    }
+
+    /**
+     * Redirect to Google for authentication.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    /**
+     * Handle Google callback.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function handleGoogleCallback(Request $request)
+    {
+        try {
+            $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+            $payload = $client->verifyIdToken($request->input('credential'));
+
+            if ($payload) {
+                $googleId = $payload['sub'];
+                $email = $payload['email'];
+                $name = $payload['name'];
+
+                $user = User::where('email', $email)->first();
+
+                if ($user) {
+                    Auth::login($user);
+                } else {
+                    $user = User::create([
+                        'name' => $name,
+                        'email' => $email,
+                        'password' => Hash::make(Str::random(24)),
+                        'google_id' => $googleId,
+                    ]);
+                    Auth::login($user);
+                }
+
+                return redirect()->route('dashboard');
+            } else {
+                return redirect()->route('login')->withErrors(['msg' => 'Google login failed']);
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('login')->withErrors(['msg' => 'Google login failed: ' . $e->getMessage()]);
+        }
     }
 }
