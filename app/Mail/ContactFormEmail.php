@@ -42,8 +42,10 @@ class ContactFormEmail extends Mailable
             view: 'contact.email',
             with: [ 'firstName' => $this->content['first_name'],
              'lastName' => $this->content['last_name'],
-              'subject' => $this->content['subject'],
-               'message' => $this->content['message'], ]
+              'contactSubject' => $this->content['subject'],
+               'contactMessage' => $this->content['message'], ],
+        
+            text: 'contact.email-text',
         );
     }
 
