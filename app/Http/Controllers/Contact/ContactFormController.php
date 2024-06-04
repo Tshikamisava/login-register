@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Contact;
 
 use App\Models\ContactForm;
 use App\Http\Controllers\Controller;
+use App\Mail\ContactFormEmail;
 use App\Rules\Recaptcha;
-// use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestEmail;
 
 class ContactFormController extends Controller
 {
@@ -37,7 +40,7 @@ class ContactFormController extends Controller
       'g-recaptcha-response' => ['required', new ReCaptcha]
     ];
 
-    // Maximum validation error messages are not shown here because the form fields on the user interface should limit maximum characters entered
+    // Maximum validation error messages are not implemented here because the form fields on the user interface should limit maximum characters entered
     $errorMessages = [
       'first_name.required' => 'Your first name is required.',
       'first_name.min' => 'Your first name must be atleast 3 characters.',
@@ -53,28 +56,57 @@ class ContactFormController extends Controller
       'g-recaptcha-response.required' => 'Please complete the reCAPTCHA.'
     ];
 
-    $data = request()->validate($validations, $errorMessages);
+    $formData = request()->validate($validations, $errorMessages);
 
     // Disallow resubmission if form was already submitted
+    Log::info($formData);
+
     $exists = ContactForm::where(
       [
-        'first_name' => request('first_name'),
-        'last_name' =>  request('last_name'),
-        'email' =>  request('email'),
-        'subject' =>  request('subject'),
-        'message' =>  request('message')
+        'first_name' => $formData['first_name'],
+        'last_name' =>  $formData['last_name'],
+        'email' =>  $formData['email'],
+        'subject' =>  $formData['subject'],
+        'message' =>  $formData['message'],
       ]
     )->exists();
 
-
-    $successMessage = 'Dear ' . request('first_name') . ', Thanks for contacting us! We will get back to you soon.';
-
-    $resubmissionMessage = 'Dear ' . request('first_name') . ', Thank you for writing to us. We got your request and within 2 business days, we will get in touch.';
-
+    // Handling resubmission issue & submission
     if ($exists) {
+
+      // User message for unallowed resubmission
+      $resubmissionMessage = 'Dear ' . request('first_name') . ', Thank you for writing to us. We got your request and within 2 business days, we will get in touch.';
+
       return redirect()->route('contact-form')->withInput()->with('success', $resubmissionMessage);
+
     } else {
-      ContactForm::create($data);
+      // Submit the form data to the database (eloquent model)
+      ContactForm::create($formData);
+
+      // Testing Email sending
+      /*$body = '<p>'. $formData['message']. '<p>';
+      $subject = $formData['subject'] . ' - Test Email';
+      $email = $formData['email'];
+
+      Mail::raw($body, function ($message) use ($email, $subject) {
+        $message->to($email)
+          ->subject($subject);
+      });
+
+      Mail::html($body, function ($message) use ($email, $subject) {
+        $message->to($email)
+          ->subject($subject);
+      });*/
+
+      $email = new ContactFormEmail($formData);
+
+      // Send the email
+      Mail::to('MailTrap@gmail.com')->send($email);
+
+
+      // User message for successful form submission
+      $successMessage = 'Dear ' . request('first_name') . ', Thanks for contacting us! We will get back to you soon.';
+
       return redirect()->route('contact-form')->withInput()->with('success', $successMessage);
     }
   }

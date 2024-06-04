@@ -1,7 +1,8 @@
 /* Move honey pot fields far off screen (Obscure class name to avoid bot tracking) */
 .bee-food{
-  position: absolute;
-  right: -9999px;
+  /* position: absolute;
+  right: -9999px; */
+  display: none;
 }
 
 .recaptcha {
